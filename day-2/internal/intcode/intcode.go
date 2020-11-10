@@ -5,24 +5,24 @@ import (
 	"fmt"
 )
 
-func Run(prog []int, noun, verb int) ([]int, error) {
-	prog[1] = noun
-	prog[2] = verb
+func Run(program []int, noun, verb int) ([]int, error) {
+	program[1] = noun
+	program[2] = verb
 
-	for i := 0; i < len(prog); i += 4 {
-		opCode := prog[i]
+	for i := 0; i < len(program); i += 4 {
+		opCode := program[i]
 
 		switch opCode {
 		case 1:
-			l, r, t := prog[i+1], prog[i+2], prog[i+3]
-			prog[t] = prog[l] + prog[r]
+			l, r, t := program[i+1], program[i+2], program[i+3]
+			program[t] = program[l] + program[r]
 
 		case 2:
-			l, r, t := prog[i+1], prog[i+2], prog[i+3]
-			prog[t] = prog[l] * prog[r]
+			l, r, t := program[i+1], program[i+2], program[i+3]
+			program[t] = program[l] * program[r]
 
 		case 99:
-			return prog, nil
+			return program, nil
 
 		default:
 			return nil, errors.New(fmt.Sprintf("invalid op code %v", i))
@@ -36,10 +36,10 @@ func Produce(program []int, expect int) (int, error) {
 	l := len(program)
 	for i := 0; i < 100; i++ {
 		for j := 0; j < 100; j++ {
-			input := make([]int, l)
-			copy(input, program)
+			programCopy := make([]int, l)
+			copy(programCopy, program)
 
-			output, err := Run(input, i, j)
+			output, err := Run(programCopy, i, j)
 			if err != nil {
 				continue
 			}

@@ -1,18 +1,18 @@
 package main
 
 import (
+	"day-2/internal/input"
 	"day-2/internal/intcode"
-	"day-2/internal/program"
 	"fmt"
 	"log"
 )
 
 func main() {
-	prog := program.Extract()
-	PartOne(prog)
+	program := input.Extract()
+	PartOne(program)
 
-	prog = program.Extract()
-	PartTwo(prog)
+	program = input.Extract()
+	PartTwo(program)
 }
 
 func PartOne(program []int) {
