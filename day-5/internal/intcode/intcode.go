@@ -7,7 +7,12 @@ import (
 	"fmt"
 )
 
-func Run(program []int, reader input.Reader, writer output.Writer) error {
+type IntCodeComputer struct {
+	input.Reader
+	output.Writer
+}
+
+func (icc IntCodeComputer) Run(program []int) error {
 	for i := 0; i < len(program); {
 		opCode := program[i]
 		op := opCode % 100
@@ -15,19 +20,19 @@ func Run(program []int, reader input.Reader, writer output.Writer) error {
 
 		switch op {
 		case 1:
-			ProcessOpCodeOne(program, modes, i)
+			icc.ProcessOpCodeOne(program, modes, i)
 			i += 4
 
 		case 2:
-			ProcessOpCodeTwo(program, modes, i)
+			icc.ProcessOpCodeTwo(program, modes, i)
 			i += 4
 
 		case 3:
-			ProcessOpCodeThree(program, i, reader)
+			icc.ProcessOpCodeThree(program, i)
 			i += 2
 
 		case 4:
-			ProcessOpCodeFour(program, modes, i, writer)
+			icc.ProcessOpCodeFour(program, modes, i)
 			i += 2
 
 		case 99:
@@ -41,7 +46,7 @@ func Run(program []int, reader input.Reader, writer output.Writer) error {
 	return errors.New("program exited unexpectedly")
 }
 
-func ProcessOpCodeOne(program []int, modes int, i int) {
+func (IntCodeComputer) ProcessOpCodeOne(program []int, modes int, i int) {
 	p1, p2, p3 := program[i+1], program[i+2], program[i+3]
 
 	l := getOperand(program, modes%10, p1)
@@ -50,7 +55,7 @@ func ProcessOpCodeOne(program []int, modes int, i int) {
 	program[p3] = l + r
 }
 
-func ProcessOpCodeTwo(program []int, modes int, i int) {
+func (IntCodeComputer) ProcessOpCodeTwo(program []int, modes int, i int) {
 	p1, p2, p3 := program[i+1], program[i+2], program[i+3]
 
 	l := getOperand(program, modes%10, p1)
@@ -59,16 +64,16 @@ func ProcessOpCodeTwo(program []int, modes int, i int) {
 	program[p3] = l * r
 }
 
-func ProcessOpCodeThree(program []int, i int, reader input.Reader) {
+func (icc IntCodeComputer) ProcessOpCodeThree(program []int, i int) {
 	p := program[i+1]
-	id := reader.GetSystemId()
+	id := icc.GetSystemId()
 	program[p] = id
 }
 
-func ProcessOpCodeFour(program []int, modes int, i int, writer output.Writer) {
+func (icc IntCodeComputer) ProcessOpCodeFour(program []int, modes int, i int) {
 	p := program[i+1]
 	o := getOperand(program, modes%10, p)
-	writer.PrintCode(o)
+	icc.PrintCode(o)
 }
 
 func getOperand(program []int, mode int, p int) int {

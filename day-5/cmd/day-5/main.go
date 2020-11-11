@@ -9,7 +9,12 @@ import (
 
 func main() {
 	program := input.Extract()
-	err := intcode.Run(program, input.IntCodeReader{}, output.IntCodeWriter{})
+	intCodeComputer := intcode.IntCodeComputer{
+		Reader: input.IntCodeReader{},
+		Writer: output.IntCodeWriter{},
+	}
+
+	err := intCodeComputer.Run(program)
 	if err != nil {
 		fmt.Println(err)
 		return
