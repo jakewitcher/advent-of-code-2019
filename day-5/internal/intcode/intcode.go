@@ -14,18 +14,6 @@ type IntCodeComputer struct {
 	pos     int
 }
 
-type Mode struct {
-	modes int
-}
-
-func (m Mode) First() int {
-	return m.modes % 10
-}
-
-func (m Mode) Second() int {
-	return (m.modes / 10) % 10
-}
-
 func (icc IntCodeComputer) Run() error {
 	for icc.pos < len(icc.Program) {
 		op, mode := icc.parseOpCode()
@@ -102,4 +90,16 @@ func (icc IntCodeComputer) parseOpCode() (int, Mode) {
 	mode := Mode{val / 100}
 
 	return op, mode
+}
+
+type Mode struct {
+	modes int
+}
+
+func (m Mode) First() int {
+	return m.modes % 10
+}
+
+func (m Mode) Second() int {
+	return (m.modes / 10) % 10
 }
