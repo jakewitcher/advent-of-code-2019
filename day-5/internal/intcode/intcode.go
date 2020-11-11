@@ -10,76 +10,96 @@ import (
 type IntCodeComputer struct {
 	input.Reader
 	output.Writer
+	Program []int
+	pos     int
 }
 
-func (icc IntCodeComputer) Run(program []int) error {
-	for i := 0; i < len(program); {
-		opCode := program[i]
-		op := opCode % 100
-		modes := opCode / 100
+type Mode struct {
+	modes int
+}
+
+func (m Mode) First() int {
+	return m.modes % 10
+}
+
+func (m Mode) Second() int {
+	return (m.modes / 10) % 10
+}
+
+func (icc IntCodeComputer) Run() error {
+	for icc.pos < len(icc.Program) {
+		op, mode := icc.parseOpCode()
 
 		switch op {
 		case 1:
-			icc.ProcessOpCodeOne(program, modes, i)
-			i += 4
+			icc.ProcessOpCodeOne(mode)
+			icc.pos += 4
 
 		case 2:
-			icc.ProcessOpCodeTwo(program, modes, i)
-			i += 4
+			icc.ProcessOpCodeTwo(mode)
+			icc.pos += 4
 
 		case 3:
-			icc.ProcessOpCodeThree(program, i)
-			i += 2
+			icc.ProcessOpCodeThree()
+			icc.pos += 2
 
 		case 4:
-			icc.ProcessOpCodeFour(program, modes, i)
-			i += 2
+			icc.ProcessOpCodeFour(mode)
+			icc.pos += 2
 
 		case 99:
 			return nil
 
 		default:
-			return errors.New(fmt.Sprintf("invalid op code %v", i))
+			return errors.New(fmt.Sprintf("invalid op code %v", op))
 		}
 	}
 
 	return errors.New("program exited unexpectedly")
 }
 
-func (IntCodeComputer) ProcessOpCodeOne(program []int, modes int, i int) {
-	p1, p2, p3 := program[i+1], program[i+2], program[i+3]
+func (icc IntCodeComputer) ProcessOpCodeOne(mode Mode) {
+	p1, p2, p3 := icc.Program[icc.pos+1], icc.Program[icc.pos+2], icc.Program[icc.pos+3]
 
-	l := getOperand(program, modes%10, p1)
-	r := getOperand(program, (modes/10)%10, p2)
+	l := icc.getOperand(mode.First(), p1)
+	r := icc.getOperand(mode.Second(), p2)
 
-	program[p3] = l + r
+	icc.Program[p3] = l + r
 }
 
-func (IntCodeComputer) ProcessOpCodeTwo(program []int, modes int, i int) {
-	p1, p2, p3 := program[i+1], program[i+2], program[i+3]
+func (icc IntCodeComputer) ProcessOpCodeTwo(mode Mode) {
+	p1, p2, p3 := icc.Program[icc.pos+1], icc.Program[icc.pos+2], icc.Program[icc.pos+3]
 
-	l := getOperand(program, modes%10, p1)
-	r := getOperand(program, (modes/10)%10, p2)
+	l := icc.getOperand(mode.First(), p1)
+	r := icc.getOperand(mode.Second(), p2)
 
-	program[p3] = l * r
+	icc.Program[p3] = l * r
 }
 
-func (icc IntCodeComputer) ProcessOpCodeThree(program []int, i int) {
-	p := program[i+1]
+func (icc IntCodeComputer) ProcessOpCodeThree() {
+	p := icc.Program[icc.pos+1]
 	id := icc.GetSystemId()
-	program[p] = id
+	icc.Program[p] = id
 }
 
-func (icc IntCodeComputer) ProcessOpCodeFour(program []int, modes int, i int) {
-	p := program[i+1]
-	o := getOperand(program, modes%10, p)
+func (icc IntCodeComputer) ProcessOpCodeFour(mode Mode) {
+	p := icc.Program[icc.pos+1]
+	o := icc.getOperand(mode.First(), p)
 	icc.PrintCode(o)
 }
 
-func getOperand(program []int, mode int, p int) int {
+func (icc IntCodeComputer) getOperand(mode int, p int) int {
 	if mode == 1 {
 		return p
 	}
 
-	return program[p]
+	return icc.Program[p]
+}
+
+func (icc IntCodeComputer) parseOpCode() (int, Mode) {
+	val := icc.Program[icc.pos]
+	op := val % 100
+	mode := Mode{val / 100}
+
+	return op, mode
 }

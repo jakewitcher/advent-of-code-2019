@@ -10,11 +10,12 @@ import (
 func main() {
 	program := input.Extract()
 	intCodeComputer := intcode.IntCodeComputer{
-		Reader: input.IntCodeReader{},
-		Writer: output.IntCodeWriter{},
+		Reader:  input.IntCodeReader{},
+		Writer:  output.IntCodeWriter{},
+		Program: program,
 	}
 
-	err := intCodeComputer.Run(program)
+	err := intCodeComputer.Run()
 	if err != nil {
 		fmt.Println(err)
 		return
