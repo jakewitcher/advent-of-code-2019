@@ -155,7 +155,7 @@ func (icc IntCodeComputer) getOperand(mode int, p int) int {
 		return p
 	}
 
-	return icc.Sequence[p]
+	return icc.getIntAt(p)
 }
 
 func (icc IntCodeComputer) getTargetIndex() int {
