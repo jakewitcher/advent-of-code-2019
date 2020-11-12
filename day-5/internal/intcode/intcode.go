@@ -10,12 +10,11 @@ import (
 type IntCodeComputer struct {
 	input.Reader
 	output.Writer
-	Program []int
-	pos     int
+	*Program
 }
 
 func (icc IntCodeComputer) Run() error {
-	for icc.pos < len(icc.Program) {
+	for icc.Processing() {
 		op, mode := icc.parseOpCode()
 
 		switch op {
@@ -81,16 +80,16 @@ func (icc IntCodeComputer) getLhsRhsOperands(mode Mode) (int, int) {
 	return l, r
 }
 
-func (icc IntCodeComputer) getTargetIndex() int {
-	return icc.getIntAt(icc.pos + 3)
-}
-
 func (icc IntCodeComputer) getOperand(mode int, p int) int {
 	if mode == 1 {
 		return p
 	}
 
-	return icc.Program[p]
+	return icc.Sequence[p]
+}
+
+func (icc IntCodeComputer) getTargetIndex() int {
+	return icc.getIntAt(icc.pos + 3)
 }
 
 func (icc IntCodeComputer) parseOpCode() (int, Mode) {
@@ -99,16 +98,4 @@ func (icc IntCodeComputer) parseOpCode() (int, Mode) {
 	mode := Mode{n / 100}
 
 	return op, mode
-}
-
-func (icc IntCodeComputer) getIntAt(n int) int {
-	return icc.Program[n]
-}
-
-func (icc IntCodeComputer) setIntAt(i int, n int) {
-	icc.Program[i] = n
-}
-
-func (icc *IntCodeComputer) moveForward(n int) {
-	icc.pos += n
 }
