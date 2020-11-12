@@ -55,9 +55,9 @@ func (icc IntCodeComputer) Run() error {
 
 func (icc IntCodeComputer) ProcessOpCodeOne(mode Mode) {
 	l, r := icc.getLhsRhsOperands(mode)
-	i := icc.getIntAt(icc.pos + 3)
+	p := icc.getTargetIndex()
 
-	icc.setIntAt(i, l+r)
+	icc.setIntAt(p, l+r)
 	icc.moveForward(4)
 }
 
