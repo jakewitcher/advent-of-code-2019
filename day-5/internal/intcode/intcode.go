@@ -20,19 +20,27 @@ func (icc IntCodeComputer) Run() error {
 		switch op {
 		case 1:
 			icc.ProcessOpCodeOne(mode)
-			icc.moveForward(4)
 
 		case 2:
 			icc.ProcessOpCodeTwo(mode)
-			icc.moveForward(4)
 
 		case 3:
 			icc.ProcessOpCodeThree()
-			icc.moveForward(2)
 
 		case 4:
 			icc.ProcessOpCodeFour(mode)
-			icc.moveForward(2)
+
+		case 5:
+			icc.ProcessOpCodeFive(mode)
+
+		case 6:
+			icc.ProcessOpCodeSix(mode)
+
+		case 7:
+			icc.ProcessOpCodeSeven(mode)
+
+		case 8:
+			icc.ProcessOpCodeEight(mode)
 
 		case 99:
 			return nil
@@ -50,6 +58,7 @@ func (icc IntCodeComputer) ProcessOpCodeOne(mode Mode) {
 	i := icc.getIntAt(icc.pos + 3)
 
 	icc.setIntAt(i, l+r)
+	icc.moveForward(4)
 }
 
 func (icc IntCodeComputer) ProcessOpCodeTwo(mode Mode) {
@@ -57,18 +66,79 @@ func (icc IntCodeComputer) ProcessOpCodeTwo(mode Mode) {
 	p := icc.getTargetIndex()
 
 	icc.setIntAt(p, l*r)
+	icc.moveForward(4)
 }
 
 func (icc IntCodeComputer) ProcessOpCodeThree() {
 	p := icc.getIntAt(icc.pos + 1)
 	id := icc.GetSystemId()
+
 	icc.setIntAt(p, id)
+	icc.moveForward(2)
 }
 
 func (icc IntCodeComputer) ProcessOpCodeFour(mode Mode) {
 	p := icc.getIntAt(icc.pos + 1)
 	o := icc.getOperand(mode.First(), p)
+
 	icc.PrintCode(o)
+	icc.moveForward(2)
+}
+
+func (icc IntCodeComputer) ProcessOpCodeFive(mode Mode) {
+	p1, p2 := icc.getIntAt(icc.pos+1), icc.getIntAt(icc.pos+2)
+
+	if icc.isTrue(mode, p1) {
+		p := icc.getOperand(mode.Second(), p2)
+		icc.setPosition(p)
+	} else {
+		icc.moveForward(3)
+	}
+}
+
+func (icc IntCodeComputer) ProcessOpCodeSix(mode Mode) {
+	p1, p2 := icc.getIntAt(icc.pos+1), icc.getIntAt(icc.pos+2)
+
+	if !icc.isTrue(mode, p1) {
+		p := icc.getOperand(mode.Second(), p2)
+		icc.setPosition(p)
+	} else {
+		icc.moveForward(3)
+	}
+}
+
+func (icc IntCodeComputer) ProcessOpCodeSeven(mode Mode) {
+	l, r := icc.getLhsRhsOperands(mode)
+	p := icc.getTargetIndex()
+
+	if l < r {
+		icc.setIntAt(p, 1)
+	} else {
+		icc.setIntAt(p, 0)
+	}
+
+	icc.moveForward(4)
+}
+
+func (icc IntCodeComputer) ProcessOpCodeEight(mode Mode) {
+	l, r := icc.getLhsRhsOperands(mode)
+	p := icc.getTargetIndex()
+
+	if l == r {
+		icc.setIntAt(p, 1)
+	} else {
+		icc.setIntAt(p, 0)
+	}
+
+	icc.moveForward(4)
+}
+
+func (icc IntCodeComputer) parseOpCode() (int, Mode) {
+	n := icc.getIntAt(icc.pos)
+	op := n % 100
+	mode := Mode{n / 100}
+
+	return op, mode
 }
 
 func (icc IntCodeComputer) getLhsRhsOperands(mode Mode) (int, int) {
@@ -92,10 +162,7 @@ func (icc IntCodeComputer) getTargetIndex() int {
 	return icc.getIntAt(icc.pos + 3)
 }
 
-func (icc IntCodeComputer) parseOpCode() (int, Mode) {
-	n := icc.getIntAt(icc.pos)
-	op := n % 100
-	mode := Mode{n / 100}
-
-	return op, mode
+func (icc IntCodeComputer) isTrue(mode Mode, p int) bool {
+	val := icc.getOperand(mode.First(), p)
+	return val != 0
 }
