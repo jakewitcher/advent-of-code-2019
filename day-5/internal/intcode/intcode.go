@@ -88,7 +88,7 @@ func (icc IntCodeComputer) ProcessOpCodeFour(mode Mode) {
 func (icc IntCodeComputer) ProcessOpCodeFive(mode Mode) {
 	p1, p2 := icc.getIntAt(icc.pos+1), icc.getIntAt(icc.pos+2)
 
-	if icc.isTrue(mode, p1) {
+	if icc.isTrue(mode.First(), p1) {
 		p := icc.getOperand(mode.Second(), p2)
 		icc.setPosition(p)
 	} else {
@@ -99,7 +99,7 @@ func (icc IntCodeComputer) ProcessOpCodeFive(mode Mode) {
 func (icc IntCodeComputer) ProcessOpCodeSix(mode Mode) {
 	p1, p2 := icc.getIntAt(icc.pos+1), icc.getIntAt(icc.pos+2)
 
-	if !icc.isTrue(mode, p1) {
+	if !icc.isTrue(mode.First(), p1) {
 		p := icc.getOperand(mode.Second(), p2)
 		icc.setPosition(p)
 	} else {
@@ -162,7 +162,7 @@ func (icc IntCodeComputer) getTargetIndex() int {
 	return icc.getIntAt(icc.pos + 3)
 }
 
-func (icc IntCodeComputer) isTrue(mode Mode, p int) bool {
-	val := icc.getOperand(mode.First(), p)
+func (icc IntCodeComputer) isTrue(mode int, p int) bool {
+	val := icc.getOperand(mode, p)
 	return val != 0
 }
