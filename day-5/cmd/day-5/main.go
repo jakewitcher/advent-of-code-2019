@@ -8,11 +8,11 @@ import (
 )
 
 func main() {
-	sequence := input.Extract()
+	process := input.Extract()
 	intCodeComputer := intcode.IntCodeComputer{
 		Reader:  input.IntCodeReader{},
 		Writer:  output.IntCodeWriter{},
-		Program: &intcode.Program{Sequence: sequence},
+		Program: &intcode.Program{Process: process},
 	}
 
 	err := intCodeComputer.Run()

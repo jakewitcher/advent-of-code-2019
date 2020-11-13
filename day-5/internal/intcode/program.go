@@ -1,16 +1,16 @@
 package intcode
 
 type Program struct {
-	Sequence []int
-	pos      int
+	Process []int
+	pos     int
 }
 
 func (p Program) getIntAt(n int) int {
-	return p.Sequence[n]
+	return p.Process[n]
 }
 
 func (p Program) setIntAt(i int, n int) {
-	p.Sequence[i] = n
+	p.Process[i] = n
 }
 
 func (p *Program) moveForward(n int) {
@@ -22,5 +22,9 @@ func (p *Program) setPosition(n int) {
 }
 
 func (p Program) Processing() bool {
-	return p.pos < len(p.Sequence)
+	return p.pos < len(p.Process)
+}
+
+func (p Program) CurrentPosition() int {
+	return p.pos
 }
