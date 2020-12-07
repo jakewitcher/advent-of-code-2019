@@ -1,13 +1,30 @@
 package intcode
 
 type Writer interface {
-	WriteSignal(n int)
+	SendSignal(source string, value int)
+	Close(source string)
 }
 
-type MemWriter struct{
+type MemWriter struct {
 	OutputSignal int
 }
 
-func (w *MemWriter) WriteSignal(code int) {
-	w.OutputSignal = code
+func (w *MemWriter) SendSignal(source string, value int) {
+	w.OutputSignal = value
+}
+
+func (w *MemWriter) Close(source string) {
+
+}
+
+type ChanWriter struct {
+	OutputSignal chan<- Signal
+}
+
+func (w *ChanWriter) SendSignal(source string, value int) {
+	w.OutputSignal <- Signal{Source: source, Value: value}
+}
+
+func (w *ChanWriter) Close(source string) {
+	w.SendSignal(source, -1)
 }

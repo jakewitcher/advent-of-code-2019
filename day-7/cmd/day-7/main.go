@@ -8,20 +8,31 @@ import (
 
 func main() {
 	process := input.Extract()
-	sequences := input.Generate()
-	PartOne(process, sequences)
+	PartOne(process)
+	PartTwo(process)
 }
 
-func PartOne(process []int, sequences [][]int) {
+func PartOne(process []int) {
+	sequences := input.Generate(0, 5)
 	var max int
 
 	for _, sequence := range sequences {
-		signal, err := intcode.PowerThrusters(process, sequence)
+		signal := intcode.PowerThrusters(process, sequence)
 
-		if err != nil {
-			fmt.Println(err)
-			return
+		if signal > max {
+			max = signal
 		}
+	}
+
+	fmt.Println(max)
+}
+
+func PartTwo(process []int) {
+	sequences := input.Generate(5, 10)
+	var max int
+
+	for _, sequence := range sequences {
+		signal := intcode.FeedbackLoop(process, sequence)
 
 		if signal > max {
 			max = signal

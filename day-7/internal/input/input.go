@@ -29,17 +29,17 @@ func Extract() []int {
 	return input
 }
 
-func Generate() [][]int {
+func Generate(start, end int) [][]int {
 	var sequences [][]int
 
-	for i := 0; i < 5; i ++ {
-		for j := 0; j < 5; j ++ {
-			for k := 0; k < 5; k ++ {
-				for l := 0; l < 5; l ++ {
-					for m := 0; m < 5; m ++ {
+	for i := start; i < end; i++ {
+		for j := start; j < end; j++ {
+			for k := start; k < end; k++ {
+				for l := start; l < end; l++ {
+					for m := start; m < end; m++ {
 						if i != j && i != k && i != l && i != m &&
 							j != k && j != l && j != m && k != l && k != m && l != m {
-							sequences = append(sequences, []int{i,j,k,l,m})
+							sequences = append(sequences, []int{i, j, k, l, m})
 						}
 					}
 				}
